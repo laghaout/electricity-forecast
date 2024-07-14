@@ -1,0 +1,34 @@
+services:
+  forecast:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: $IMAGE_URI
+    volumes:
+      - $PWD:/$WORK_DIR:ro
+      - $PWD/$DATA_DIR:/$WORK_DIR/$DATA_DIR:ro
+      - $PWD/$LESSON_DIR:/$WORK_DIR/$LESSON_DIR
+    working_dir: /$WORK_DIR/
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+  forecast-shell:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: $IMAGE_URI
+    volumes:
+      - $PWD:/$WORK_DIR:ro
+      - $PWD/$DATA_DIR:/$WORK_DIR/$DATA_DIR:ro
+      - $PWD/$LESSON_DIR:/$WORK_DIR/$LESSON_DIR
+    working_dir: /$WORK_DIR/
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+    entrypoint: /bin/bash
+    tty: true
+    stdin_open: true
