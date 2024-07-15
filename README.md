@@ -1,17 +1,15 @@
 
 # Table of Contents
 
-1.  [Introduction](#orgb6202ab)
-2.  [User manual](#org2e3deae)
+1.  [User manual](#org9d8bd4d)
 
 
 
-<a id="orgb6202ab"></a>
-
-# Introduction
-
-
-<a id="org2e3deae"></a>
+<a id="org9d8bd4d"></a>
 
 # User manual
+
+1.  Place the dataset \`DK-DK2.csv\` under \`data/\`
+2.  Dockerize with \`docker compose build\`
+3.  Run the training with \`docker compose run forecast train\` or the serving with \`docker compose run forecast serve\`
 

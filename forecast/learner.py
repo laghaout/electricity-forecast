@@ -16,66 +16,68 @@ from types import SimpleNamespace
 
 
 class Learner(BaseModel):
-
     data: wra.Wrangler
     report: dict = dict(explore=None, train=None, test=None)
 
     class Config:
-        extra = Extra.allow     
-        
+        extra = Extra.allow
+
     def __call__(self):
-        
         self.report = SimpleNamespace(**self.report)
-        
+
     def explore(self):
-        
         dataset = self.data.dataset.train
-        
-        corr = util.compute_correlations(
-            dataset, self.data.target)
+
+        corr = util.compute_correlations(dataset, self.data.target)
         corr.sort_values(self.data.target, inplace=True)
         self.report.explore = dict(corr=corr)
-        
-        plt.figure(figsize=(8, 6))
+
+        plt.figure(figsize=(16, 12))
         ax = sns.barplot(
-            data=corr.reset_index(), x='index', y=self.data.target)
-        
+            data=corr.reset_index(), x="index", y=self.data.target
+        )
+
         # Set plot title and labels
-        plt.title(f'Pearson correlation with `{self.data.target}`')
-        plt.ylabel('Features')
-        plt.xlabel('Pearson correlation coefficient')
+        plt.title(f"Pearson correlation with `{self.data.target}`")
+        plt.ylabel("Features")
+        plt.xlabel("Pearson correlation coefficient")
         ax.set_xticklabels(ax.get_xticklabels(), fontsize=7, rotation=90)
-        
+        # plt.savefig('pearson.png')
         # Show the plot
         plt.show()
-        
+
     def train(self):
-        self.model = Sequential([
-            Dense(10, input_dim=len(self.data.features), activation='relu'), 
-            Dense(1)  # Output layer with 1 output
-        ])
-        
+        self.model = Sequential(
+            [
+                Dense(
+                    10, input_dim=len(self.data.features), activation="relu"
+                ),
+                Dense(10, activation="relu"),
+                Dense(1),  # Output layer with 1 output
+            ]
+        )
+
         import tensorflow as tf
-        
+
         # Compile the model
         self.model.compile(
-            optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), 
-            loss='mean_squared_error')
-        
+            optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+            loss="mean_squared_error",
+        )
+
         # Train the model
         self.model.fit(
-            self.data.dataset.train[self.data.features], 
-            self.data.dataset.train[self.data.target], 
-            epochs=5, batch_size=32)
+            self.data.dataset.train[self.data.features],
+            self.data.dataset.train[self.data.target],
+            epochs=5,
+            batch_size=32,
+        )
 
     def test(self):
-        
         # Make predictions
         evaluation = self.model.evaluate(
             self.data.dataset.test[self.data.features],
-            self.data.dataset.test[self.data.target])
+            self.data.dataset.test[self.data.target],
+        )
 
-        self.report.test = dict(
-            evaluation=evaluation)
-                                   
-                
+        self.report.test = dict(evaluation=evaluation)
